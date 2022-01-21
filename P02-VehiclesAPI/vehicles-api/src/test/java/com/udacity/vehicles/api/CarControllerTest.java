@@ -127,6 +127,33 @@ public class CarControllerTest {
     }
 
     /**
+     * Tests the update operation for a single car
+     *
+     * @throws Exception if the update operation fails
+     */
+    @Test
+    public void updateCar() throws Exception {
+        Car car = carService.save((getCar()));
+
+        mvc.perform(  get(("/cars/1"))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(new MediaType("application", "*+json")))
+                .andExpect(jsonPath("$.condition", equalTo(Condition.USED.toString())));
+
+        car.setCondition(Condition.NEW);
+        carService.save(car);
+
+        mvc.perform(  get(("/cars/1"))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(new MediaType("application", "*+json")))
+                .andExpect(jsonPath("$.condition", equalTo(Condition.NEW.toString())));
+
+
+    }
+
+    /**
      * Tests the deletion of a single car by ID.
      *
      * @throws Exception if the delete operation of a vehicle fails
